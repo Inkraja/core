@@ -575,7 +575,9 @@ if (!class_exists("jquery")) {
 		*/
 		public function Autocomplete($id, $myarray, $returnJS=false){
 			if(is_array($myarray) && count($myarray) > 0){
-				$myarray = str_replace('"', '', $myarray);	// clean the array, remove hyphens
+				foreach($myarray as $k => $v){
+					$myarray[$k] = $this->sanitize($v, true);
+				}
 				$js_array = $this->implode_wrapped('"','"', ",", $myarray);
 				if (is_array($id)){
 					$ids = implode(',#', $id);
@@ -1244,33 +1246,64 @@ if (!class_exists("jquery")) {
 		public function qtip($name, $content, $options=array()){
 			$varname	= str_replace(".", "", $name);
 			if(!isset($this->inits['qtip'][$varname])){
-				$content			= (isset($options['contfunc'])) ? '{ text: function(api) { '.$content.' } }' : '"'.$content.'"';
 				$viewport		= (isset($options['custom_viewport'])) ? $options['custom_viewport'] : '$(window)';
 				$adjust_pos		= (isset($options['position_adjustment'])) ? $options['position_adjustment'] : 'shift none';
 				$extra_class	= (isset($options['classes'])) ? 'classes: "'.$options['classes'].'",' : '';
 				$my				= (isset($options['my'])) ? $options['my'] : 'top center';
 				$at				= (isset($options['at'])) ? $options['at'] : 'bottom center';
 				$width			= (isset($options['width'])) ? 'width: '.$options['width'].',' : '';
-				$this->tpl->add_js('$("'.$name.'").qtip({
-					content: '.$content.',
-					position: {
-						adjust: {
-							method: "'.$adjust_pos.'"
+				if(isset($options['sticky'])){
+					$content			= (isset($options['contfunc'])) ? 'function(api) { '.$content.' }' : '"'.$content.'"';
+					$this->tpl->add_js('$("'.$name.'").qtip({
+						content: {
+							text: '.$content.',
+							title: {
+								text: function(api) { return $(this).attr("data-coretiphead") },
+								button: true
+							}
 						},
-						viewport: '.$viewport.',
-						at: "'.$at.'",
-						my: "'.$my.'"
-					},
-					show: {
-						event: "mouseenter"
-					},
-					style: {
-						tip: {
-							corner: true
-						},'.$width.$extra_class.'
-						widget: true
-					}
-				});', 'docready');
+						position: {
+							adjust: {
+								method: "'.$adjust_pos.'"
+							},
+							viewport: '.$viewport.',
+							at: "'.$at.'",
+							my: "'.$my.'"
+						},
+						show: {
+							event: "mouseenter"
+						},
+						hide: false,
+						style: {
+							tip: {
+								corner: true
+							},'.$width.$extra_class.'
+							widget: true
+						}
+					});', 'docready');
+				}else{
+					$content			= (isset($options['contfunc'])) ? '{ text: function(api) { '.$content.' } }' : '"'.$content.'"';
+					$this->tpl->add_js('$("'.$name.'").qtip({
+						content: '.$content.',
+						position: {
+							adjust: {
+								method: "'.$adjust_pos.'"
+							},
+							viewport: '.$viewport.',
+							at: "'.$at.'",
+							my: "'.$my.'"
+						},
+						show: {
+							event: "mouseenter"
+						},
+						style: {
+							tip: {
+								corner: true
+							},'.$width.$extra_class.'
+							widget: true
+						}
+					});', 'docready');
+				}
 				$this->inits['qtip'][$varname] = true;
 			}
 		}

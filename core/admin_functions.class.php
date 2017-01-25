@@ -303,7 +303,7 @@ class admin_functions extends gen_class {
 				1		=> array('link' => 'maintenance/'.$this->SID,		'text' => $this->user->lang('maintenance'),		'check' => 'a_maintenance',	'icon' => 'fa-cog fa-lg fa-fw'),
 				2		=> array('link' => 'admin/manage_live_update.php'.$this->SID,		'text' => $this->user->lang('liveupdate'),		'check' => 'a_maintenance',	'icon' => 'fa fa-refresh fa-lg fa-fw'),
 				3		=> array('link' => 'admin/manage_backup.php'.$this->SID,			'text' => $this->user->lang('backup'),			'check' => 'a_backup',		'icon' => 'fa-floppy-o fa-lg fa-fw'),
-				4		=> array('link' => 'admin/manage_reset.php'.$this->SID,				'text' => $this->user->lang('reset'),			'check' => 'a_reset',	'icon' => 'fa-retweet fa-lg fa-fw'),
+				4		=> array('link' => 'admin/manage_reset.php'.$this->SID,				'text' => $this->user->lang('consolidate_reset'),			'check' => 'a_reset',	'icon' => 'fa-retweet fa-lg fa-fw'),
 				5		=> array('link' => 'admin/manage_cache.php'.$this->SID,				'text' => $this->user->lang('pdc_manager'),		'check' => 'a_cache_man',	'icon' => 'fa-briefcase fa-lg fa-fw'),
 				6		=> array('link' => 'admin/info_database.php'.$this->SID,			'text' => $this->user->lang('mysql_info'),		'check' => 'a_maintenance',	'icon' => 'fa-database fa-lg fa-fw'),				
 			),
@@ -320,13 +320,6 @@ class admin_functions extends gen_class {
 			}
 			$admin_menu['favorits']['icon'] = 'fa-star fa-lg fa-fw';
 			$admin_menu['favorits']['name'] = $this->user->lang('favorits');
-			//Style Management
-			$admin_menu['favorits'][1] = array(
-				'link'	=> 'admin/manage_extensions.php'.$this->SID.'&tab=1',
-				'text'	=> $this->user->lang('styles_title'),
-				'check'	=> 'a_extensions_man',
-				'icon'	=> 'fa-paint-brush fa-lg fa-fw',
-			);
 				
 			$i = 2;
 			if (is_array($favs_array) && count($favs_array) > 0){
@@ -347,13 +340,6 @@ class admin_functions extends gen_class {
 					}
 					$i++;
 				}
-			} else {  // If there are no links, point to the favorites-management
-				$admin_menu['favorits'][2] = array(
-					'link'	=> 'admin/manage_menus.php'.$this->SID.'&tab=1',
-					'text'	=> $this->user->lang('manage_menus'),
-					'check'	=> 'a_menues_man',
-					'icon'	=> 'fa-list fa-lg fa-fw',
-				);
 			}
 		}
 
@@ -363,7 +349,7 @@ class admin_functions extends gen_class {
 	public function setAdminTooltip()
 	{
 		$admin_menu = $this->adminmenu(false, "", "", true);
-
+		
 		// Add favorites to template vars
 		foreach (array_slice($admin_menu['favorits'], 2) as $fav)
 		{
