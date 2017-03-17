@@ -43,20 +43,25 @@ class hfile extends html {
 
 	protected static $type = 'file';
 
-	public $name = '';
-	public $readonly = false;
-	public $class = 'input';
-	public $inptype = '';
-	public $required = false;
-	public $preview = false;
+	public $name				= '';
+	public $readonly			= false;
+	public $class				= 'input';
+	public $inptype				= '';
+	public $required			= false;
+	public $fvmessage			= false;
+	public $preview				= false;
 
 
-	protected $mimetypes = false;
-	protected $numerate = false;
-	protected $extensions = array();
-	private $out = '';
+	protected $mimetypes		= false;
+	protected $numerate			= false;
+	protected $extensions		= array();
+	private $out				= '';
 
 	public function _construct() {
+		if(empty($this->id)) $this->id = $this->cleanid($this->name);
+	}
+
+	public function output() {
 		$out = '<input type="'.self::$type.'" name="'.$this->name.'" ';
 		if(empty($this->id)) $this->id = $this->cleanid($this->name);
 		$out .= 'id="'.$this->id.'" ';
@@ -65,10 +70,11 @@ class hfile extends html {
 		if(!empty($this->class)) $out .= 'class="'.$this->class.'" ';
 		if(!empty($this->size)) $out .= 'size="'.$this->size.'" ';
 		if($this->readonly) $out .= 'readonly="readonly" ';
+		if($this->required) $out .= ' required="required" data-fv-message="'.(($this->fvmessage) ? $this->fvmessage : registry::fetch('user')->lang('fv_required')).'"';
 		if(!empty($this->js)) $out.= $this->js.' ';
 		if($this->preview) $out .= 'onchange="previewImage_'.$this->name.'(this);"';
 		$out .= ' />';
-		if($this->required) $out .= '<i class="fa fa-asterisk required small"></i> <span class="fv_msg" style="display:none;">'.registry::fetch('user')->lang('fv_required').'</span>';
+		if($this->required) $out .= '<i class="fa fa-asterisk required small"></i>';
 		if ($this->preview){
 			$out = '<img src="'.((isset($this->value) && $this->value) ? $this->value : registry::get_const('server_path').'images/global/default-image.svg').'" class="uploadPreview" style="max-height: 60px;"/>'.$out;
 
@@ -84,13 +90,9 @@ class hfile extends html {
 				}
 			};'
 
-			);
+					);
 		}
-		$this->out = $out;
-	}
-
-	public function _toString() {
-		return $this->out;
+		return $out;
 	}
 
 	public function _inpval() {

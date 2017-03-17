@@ -65,8 +65,8 @@ if( !class_exists( "plus_datahandler")){
 
 		//Constructor
 		public function __construct(){
-			if(!$this->pdl->type_known('pdh_error')) $this->pdl->register_type('pdh_error', null, array($this, 'html_format_errors'), array(3, 4));
-			if(!$this->pdl->type_known('pdh')) $this->pdl->register_type('pdh', null, array($this, 'html_format_errors'), array(3, 4));
+			if(!$this->pdl->type_known('pdh_error')) $this->pdl->register_type('pdh_error', null, array($this, 'html_format_errors'), array(3, 4), false);
+			if(!$this->pdl->type_known('pdh')) $this->pdl->register_type('pdh', null, array($this, 'html_format_errors'), array(3, 4), false);
 			$this->init_module_path();
 
 			require_once( $this->rm_path.'pdh_r_generic.class.php' );
@@ -347,7 +347,11 @@ if( !class_exists( "plus_datahandler")){
 			if( method_exists( $objModule, $method ) ) {
 				if(DEBUG > 3){
 					$data = debug_backtrace();
-					$extra = array('module: '.$module, 'tag: '.$tag, 'params: '.implode( ", ", $params ));
+					if(!is_array($module) && !is_array($tag)) {
+						$extra = array('module: '.$module, 'tag: '.$tag, 'params: '.implode_r( ", ", $params ));
+					} else {
+						$extra = array('error: module or tag is an array instead of string');
+					}
 					for($i=0;$i>0;$i++) {
 						if(isset($data[$i]['file']) && strpos($data[$i]['file'], 'plus_datahandler') === false) break;
 					}
@@ -358,7 +362,7 @@ if( !class_exists( "plus_datahandler")){
 				return call_user_func_array( array( $objModule, $method ), $params );
 			} else {
 				$data = debug_backtrace();
-				$extra = array('module: '.$module, 'tag: '.$tag, 'params: '.implode( ", ", $params ), 'sub_array: '.implode( ", ", $sub_arr ));
+				$extra = array('module: '.$module, 'tag: '.$tag, 'params: '.implode_r( ", ", $params ), 'sub_array: '.implode_r( ", ", $sub_arr ));
 				for($i=0;$i>0;$i++) {
 					if(isset($data[$i]['file']) && strpos($data[$i]['file'], 'plus_datahandler') === false) break;
 				}
@@ -577,7 +581,7 @@ if( !class_exists( "plus_datahandler")){
 			if( $this->register_write_module( $module ) ) {
 				if(DEBUG > 3){
 					$data = debug_backtrace();
-					$extra = array('module: '.$module, 'function: '.$function, 'params: '.implode( ", ", $params ));
+					$extra = array('module: '.$module, 'function: '.$function, 'params: '.implode_r( ", ", $params ));
 					
 					if(is_array($module) || is_array($function)){
 						debug_print_backtrace();

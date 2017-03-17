@@ -38,30 +38,31 @@ class hpassword extends html {
 
 	protected static $type = 'password';
 
-	public $name = '';
-	public $set_value = false;
-	public $required = false;
-	public $pattern = 'password';
-	public $autocomplete = false;
+	public $name				= '';
+	public $set_value			= false;
+	public $required			= false;
+	public $fvmessage			= false;
+	public $pattern				= 'password';
+	public $autocomplete		= false;
 
 	public function _construct() {
 		if(empty($this->id)) $this->id = $this->cleanid($this->name);
 	}
 
-	public function _toString() {
+	public function output() {
 		$out = '<input type="'.self::$type.'" name="'.$this->name.'" id="'.$this->id.'" ';
 		if($this->set_value && !empty($this->value)) $out .= 'value="'.$this->value.'" ';
 		if(!empty($this->pattern)) $this->class .= ' fv_success';
 		if(!empty($this->equalto)) $this->class .= ' equalto';
 		if(!empty($this->class)) $out .= 'class="'.$this->class.'" ';
 		if($this->readonly) $out .= 'readonly="readonly" ';
-		if($this->required) $out .= 'required="required" ';
+		if($this->required) $out .= ' required="required" data-fv-message="'.(($this->fvmessage) ? $this->fvmessage : registry::fetch('user')->lang('fv_required')).'"';
 		if(!$this->autocomplete) $out .= 'autocomplete="off" ';
 		if(!empty($this->pattern)) $out .= 'pattern="'.$this->pattern($this->pattern).'" ';
 		if(!empty($this->equalto)) $out .= 'data-equalto="'.$this->equalto.'" ';
 		if(!empty($this->js)) $out.= $this->js.' ';
 		$out .= ' />';
-		if($this->required) $out .= '<i class="fa fa-asterisk required small"></i> <span class="fv_msg" style="display:none;">'.registry::fetch('user')->lang('fv_required').'</span>';
+		if($this->required) $out .= '<i class="fa fa-asterisk required small"></i>';
 		return $out;
 	}
 

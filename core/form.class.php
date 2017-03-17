@@ -92,9 +92,16 @@ class form extends gen_class {
 		$text = (empty($options['text'])) ? '' : $options['text'];
 		$text2 = (empty($options['text2'])) ? '' : $options['text2'];
 		$field = (registry::class_exists('h'.$options['type'])) ?  new $field_class($name, $options) : '';
+		
 		// add the correct id into the options-array
-		if(is_object($field)) $options['id'] = $field->id;
-		return $text.$field.$text2;
+		if(is_object($field)) {
+			$options['id'] = $field->id;
+			$strField = $field->output();
+		} else {
+			$strField = "";
+		}
+		
+		return $text.$strField.$text2;
 	}
 
 	/**
@@ -459,7 +466,7 @@ class form extends gen_class {
 				$js = "
 $('[data-equalto]').bind('input', function() {
     var to_confirm = $(this);
-    var to_equal = $('#' + to_confirm.data('equalto'));				
+    var to_equal = $('#' + to_confirm.data('equalto'));
 						
     if(to_confirm.val() != to_equal.val()){
 			if(fieldtype == 'email'){
@@ -468,7 +475,7 @@ $('[data-equalto]').bind('input', function() {
 				 this.setCustomValidity(\"".$this->jquery->sanitize(registry::fetch('user')->lang('fv_required_password_repeat'))."\");
 			} else {
 				 this.setCustomValidity(\"".$this->jquery->sanitize(registry::fetch('user')->lang('fv_fields_not_match'))."\");
-			};	
+			};
 	}
     else {
         this.setCustomValidity('');

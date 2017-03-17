@@ -50,6 +50,7 @@ class htext extends html {
 	public $placepicker			= false;
 	public $placepicker_withmap	= false;
 	public $required			= false;
+	public $fvmessage			= false;
 	public $returnJS			= false;
 	public $autocomplete		= array();
 	public $class				= 'input';
@@ -59,8 +60,12 @@ class htext extends html {
 	private $out = '';
 
 	public function _construct() {
-		$jsout	= '';
+		if(empty($this->id)) $this->id = $this->cleanid($this->name);
+	}
 
+	public function output() {
+		$this->out = "";
+		$jsout	= '';
 		if(empty($this->id)) $this->id = $this->cleanid($this->name);
 		if(!empty($this->autocomplete)) {
 			$this->jquery->Autocomplete($this->id, $this->autocomplete, $this->returnJS);
@@ -95,7 +100,7 @@ class htext extends html {
 		if(!empty($this->class)) $out .= 'class="'.$this->class.'" ';
 		if(!empty($this->size)) $out .= 'size="'.$this->size.'" ';
 		if($this->readonly) $out .= 'readonly="readonly" ';
-		if($this->required) $out .= 'required="required" ';
+		if($this->required) $out .= ' required="required" data-fv-message="'.(($this->fvmessage) ? $this->fvmessage : registry::fetch('user')->lang('fv_required')).'"';
 		if($this->disabled) $out .= 'disabled="disabled" ';
 		if(is_array($this->attrdata) && count($this->attrdata) > 0){
 			foreach($this->attrdata as $attrdata_name=>$attrdata_value){
@@ -112,13 +117,10 @@ class htext extends html {
 		if(!empty($this->placeholder)) $out .= 'placeholder="'.$this->placeholder.'" ';
 		if(!empty($this->js)) $out.= $this->js.' ';
 		$out .= ' />';
-		if(!empty($this->pattern)) $out .= '<span class="fv_msg" style="display:none;">'.registry::fetch('user')->lang('fv_sample_pattern').'</span>';
-		elseif($this->required) $out .= '<i class="fa fa-asterisk required small"></i> <span class="fv_msg" style="display:none;">'.registry::fetch('user')->lang('fv_required').'</span>';
+		if(!empty($this->pattern)) $out .= '<span class="fv_msg">'.registry::fetch('user')->lang('fv_sample_pattern').'</span>';
+		elseif($this->required) $out .= '<i class="fa fa-asterisk required small"></i>';
 		if(!empty($this->after_txt)) $out .= $this->after_txt;
 		$this->out = $out;
-	}
-
-	public function _toString() {
 		return $this->out;
 	}
 
