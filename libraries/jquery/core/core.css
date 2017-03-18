@@ -967,6 +967,7 @@ body .ui-tooltip {
 .ui-widget button {
 	font-family: @jqueryUIFontFamily;
 	font-size: 1em;
+	background: @jqueryUIContentBackground;
 }
 .ui-widget.ui-widget-content {
 	border: 1px solid @jqueryUIStateDefaultBorderColor;
